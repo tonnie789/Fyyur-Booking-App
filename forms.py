@@ -17,6 +17,18 @@ class ShowForm(Form):
     )
 
 class VenueForm(Form):
+    def validate_phone(self, phone):
+        us_phone_num = '^([0-9]{3})[-][0-9]{3}[-][0-9]{4}$'
+        match = re.search(us_phone_num, phone.data)
+        if not match:
+            raise ValidationError('Error, phone number must be in format xxx-xxx-xxxx')
+
+    def validate_genres(form, field):
+        genres_values = [choice[1] for choice in genres_choices]
+        for value in field.data:
+            if value not in genres_values:
+                raise ValidationError('Invalid genres value.')
+                
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -83,14 +95,14 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[DataRequired(),validate_phone]
     )
     image_link = StringField(
         'image_link'
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
+        'genres', validators=[DataRequired(),validate_genres],
         choices=[
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
@@ -124,6 +136,18 @@ class VenueForm(Form):
     )
 
 class ArtistForm(Form):
+    def validate_phone(self, phone):
+        us_phone_num = '^([0-9]{3})[-][0-9]{3}[-][0-9]{4}$'
+        match = re.search(us_phone_num, phone.data)
+        if not match:
+            raise ValidationError('Error, phone number must be in format xxx-xxx-xxxx')
+
+    def validate_genres(form, field):
+        genres_values = [choice[1] for choice in genres_choices]
+        for value in field.data:
+            if value not in genres_values:
+                raise ValidationError('Invalid genres value.')
+                
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -188,14 +212,14 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[DataRequired(),validate_phone]
     )
     image_link = StringField(
         'image_link'
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
+        'genres', validators=[DataRequired(), validate_genres],
         choices=[
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
